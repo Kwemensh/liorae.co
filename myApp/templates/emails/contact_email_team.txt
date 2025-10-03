@@ -1,0 +1,12 @@
+New Inquiry — Lioraè Co.
+
+Name: {{ d.full_name }}
+Email: {{ d.email }}
+Company: {{ d.company|default:"—" }}
+Website/Social: {{ d.website|default:"—" }}
+Budget: {{ d.budget }}
+Timeline: {{ d.timeline }}
+Services: {{ d.services|join:", " | default:"—" }}
+
+Message:
+{{ d.message }}

@@ -1,0 +1,16 @@
+Lioraè Co. — We received your inquiry
+
+Hey {{ d.full_name }},
+
+Thanks for reaching out! We’ll review your goals and reply within 24 hours.
+
+Company: {{ d.company|default:"—" }}
+Website/Social: {{ d.website|default:"—" }}
+Budget: {{ d.budget }}
+Timeline: {{ d.timeline }}
+Services: {{ d.services|join:", " | default:"—" }}
+
+Your message:
+{{ d.message }}
+
+— Team Lioraè

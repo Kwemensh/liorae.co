@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+  <body style="margin:0;padding:0;background:#f6f9fc;">
+    <table width="100%" cellpadding="0" cellspacing="0" role="presentation">
+      <tr><td align="center" style="padding:28px 12px;">
+        <table width="600" cellpadding="0" cellspacing="0" role="presentation" style="background:#ffffff;border-radius:16px;box-shadow:0 6px 28px rgba(2,8,23,.08);overflow:hidden;">
+          <tr>
+            <td style="padding:24px 24px 0 24px;background:linear-gradient(90deg,#0EA5E9,#A855F7);">
+              <h1 style="margin:0;color:#ffffff;font-family:Inter,Arial,sans-serif;font-size:20px;">Lioraè Co.</h1>
+              <p style="margin:6px 0 0 0;color:#eaf6ff;font-family:Inter,Arial,sans-serif;font-size:13px;">We received your inquiry 🎉</p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:22px 24px 8px 24px;">
+              <p style="margin:0 0 12px 0;font-family:Inter,Arial,sans-serif;color:#0B0F1A;font-size:16px;">
+                Hey {{ d.full_name }}, thanks for reaching out! We’re reviewing your goals and will reply within 24 hours.
+              </p>
+              <p style="margin:0 0 16px 0;font-family:Inter,Arial,sans-serif;color:#334155;font-size:14px;">
+                Here’s a quick recap of what you sent:
+              </p>
+              <table role="presentation" cellpadding="0" cellspacing="0" style="width:100%;font-family:Inter,Arial,sans-serif;color:#0B0F1A;font-size:14px;">
+                <tr><td style="padding:8px 0;width:160px;color:#64748b;">Company</td><td style="padding:8px 0;">{{ d.company|default:"—" }}</td></tr>
+                <tr><td style="padding:8px 0;color:#64748b;">Website/Social</td><td style="padding:8px 0;">{{ d.website|default:"—" }}</td></tr>
+                <tr><td style="padding:8px 0;color:#64748b;">Budget</td><td style="padding:8px 0;">{{ d.budget }}</td></tr>
+                <tr><td style="padding:8px 0;color:#64748b;">Timeline</td><td style="padding:8px 0;">{{ d.timeline }}</td></tr>
+                <tr><td style="padding:8px 0;color:#64748b;">Services</td><td style="padding:8px 0;">{{ d.services|join:", " | default:"—" }}</td></tr>
+              </table>
+              <div style="margin:16px 0 0 0;padding:14px 16px;border-radius:12px;background:#f1f5f9;">
+                <div style="font-family:Inter,Arial,sans-serif;color:#0B0F1A;font-size:14px;">Your message</div>
+                <div style="margin-top:6px;font-family:Inter,Arial,sans-serif;color:#334155;font-size:14px;line-height:1.6;">{{ d.message|linebreaksbr }}</div>
+              </div>
+              <p style="margin:16px 0 0 0;font-family:Inter,Arial,sans-serif;color:#334155;font-size:14px;">
+                If you need anything else, just hit reply. 💬
+              </p>
+              <p style="margin:8px 0 0 0;font-family:Inter,Arial,sans-serif;color:#0B0F1A;font-size:14px;">
+                — Team Lioraè
+              </p>
+            </td>
+          </tr>
+          <tr>
+            <td style="padding:16px 24px 20px 24px;border-top:1px solid #e5e7eb;background:#fafafa;color:#64748b;font-family:Inter,Arial,sans-serif;font-size:12px;">
+              Lioraè Co. • Social, Content, Funnels, Automation
+            </td>
+          </tr>
+        </table>
+      </td></tr>
+    </table>
+  </body>
+</html>

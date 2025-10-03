@@ -1,0 +1,1243 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Lioraè Co. — Social Media Marketing{% endblock %}
+
+{% block content %}
+
+<!-- ========================= PAGE STYLES (consolidated) ========================= -->
+<style>
+  /* layout safety */
+  html, body { max-width: 100%; overflow-x: hidden; }
+
+  /* quick rhythm tweaks */
+  #work-cosmos .py-8 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
+  @media (min-width:768px){
+    #work-cosmos .md\:py-12 { padding-top: 2rem; padding-bottom: 2rem; }
+  }
+
+  /* helpers */
+  :root{ --navy:#0b1220; }
+  .text-ink{ color:#0b0f1a }
+  .bg-navy{ background:var(--navy) }
+  .link-muted{ color:rgba(11,15,26,.70) }
+  .dark .link-muted{ color:rgba(255,255,255,.75) }
+  .link-muted:hover{ text-decoration:underline }
+
+  .section-title{
+    font-weight:800; letter-spacing:-.02em; line-height:1.05;
+    font-size:clamp(28px,5.6vw,44px); color:#0b0f1a;
+  }
+  .dark .section-title{ color:#fff }
+
+  .reveal{ opacity:0; transform:translateY(10px); transition:opacity .5s ease, transform .5s ease }
+  .reveal.in{ opacity:1; transform:none }
+  @media (prefers-reduced-motion:reduce){ .reveal{ opacity:1; transform:none; transition:none } }
+
+  /* HERO — blob + animated headline */
+  .logo-blob{ transform-origin:50% 50%; animation:blobspin 18s linear infinite; filter:drop-shadow(0 10px 24px rgba(2,8,23,.14)) }
+  @keyframes blobspin{ 0%{transform:rotate(0) scale(1)} 50%{transform:rotate(180deg) scale(1.02)} 100%{transform:rotate(360deg) scale(1)} }
+  @media (prefers-reduced-motion:reduce){ .logo-blob{ animation:none } }
+  .dark .logo-blob stop[offset="100%"]{ stop-color:#ffffff }
+  @keyframes sweep { 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+  .anim-gradient{
+    background-image:linear-gradient(90deg,#0B0F1A 0%,#0EA5E9 45%,#002467 90%);
+    background-size:200% 100%; animation:sweep 6s linear infinite; -webkit-background-clip:text; background-clip:text; color:transparent
+  }
+  .dark .anim-gradient{ background-image:linear-gradient(90deg,#ffffff 0%,#67e8f9 45%,#00438f 90%) }
+  @media (prefers-reduced-motion:reduce){ .anim-gradient{ animation:none !important } }
+
+  /* LOGO MARQUEE (shared compact) */
+  .lm-viewport{ overflow:hidden; }
+  .lm-track{ display:flex; gap:1.5rem; align-items:center; white-space:nowrap; animation: lm var(--speed,24s) linear infinite; }
+  .lm-list{ display:flex; gap:1.75rem; padding:0 .25rem; }
+  .lm-item{ display:flex; align-items:center; justify-content:center; min-width:max-content; }
+  .lm-viewport:hover .lm-track{ animation-play-state: paused; }
+  @keyframes lm { from{ transform: translateX(0) } to{ transform: translateX(-50%) } }
+  .logo-pill{
+    padding:.4rem .8rem; border-radius:14px;
+    background: linear-gradient(90deg, rgba(14,165,233,.12), rgba(168,85,247,.12));
+    border:1px solid rgba(2,8,23,.08); box-shadow: 0 8px 18px rgba(2,8,23,.10);
+  }
+  .dark .logo-pill{
+    background: linear-gradient(90deg, rgba(103,232,249,.16), rgba(216,180,254,.16));
+    border-color: rgba(255,255,255,.14); box-shadow: 0 12px 26px rgba(0,0,0,.45);
+  }
+  .logo-word{
+    font-weight:800; letter-spacing:.2px; font-size:.95rem; line-height:1;
+    background:linear-gradient(90deg,#000,#000); -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow:0 1px 0 rgba(2,8,23,.10), 0 8px 16px rgba(2,8,23,.08); filter:saturate(1.1) contrast(1.05);
+  }
+  @media (min-width:768px){ .logo-word{ font-size:1.05rem } }
+
+  /* ABOUT band sheen */
+  .about-sheen{
+    background:
+      linear-gradient(110deg, transparent 0%, rgba(255,255,255,.07) 45%, transparent 70%),
+      radial-gradient(900px 320px at 15% -10%, rgba(255,255,255,.05), transparent 60%),
+      radial-gradient(900px 320px at 85% 0%,  rgba(255,255,255,.05), transparent 60%);
+    background-size:220% 100%, auto, auto; animation:aboutSweep 16s linear infinite
+  }
+  @keyframes aboutSweep{ 0%{background-position:0% 0,0 0,0 0} 100%{background-position:200% 0,0 0,0 0} }
+
+  /* COSMOS showcase */
+  .font-serif{ font-family: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif; }
+  .cos-dot{
+    position:absolute; width:10px; height:10px; border-radius:9999px;
+    background:radial-gradient(circle at 30% 30%, rgba(255,255,255,.6), rgba(255,255,255,0) 70%);
+    top:30%; left:70%; filter:blur(1px); animation:cosFloat 12s ease-in-out infinite; opacity:.16;
+  }
+  .cos-dot.delay-1{ top:65%; left:20%; animation-delay:-4s }
+  .cos-dot.delay-2{ top:15%; left:45%; animation-delay:-8s }
+  @keyframes cosFloat{ 0%{transform:translate3d(0,0,0)} 50%{transform:translate3d(-16px,-10px,0)} 100%{transform:translate3d(0,0,0)} }
+  .cos-card{
+    --dx: 0px; --dy: 0px; --enter: 12px;
+    transform: translate3d(var(--dx), var(--dy), 0) translateY(var(--enter));
+    opacity: 0;
+    transition: transform .7s cubic-bezier(.22,.61,.36,1), opacity .7s ease;
+  }
+  .cos-card.show{ --enter: 0px; opacity: 1; }
+  .cos-card:hover{
+    transform: translate3d(var(--dx), var(--dy), 0) translateY(var(--enter)) translateY(-4px) scale(1.02) rotateZ(-.3deg);
+  }
+
+  /* TESTIMONIALS */
+  .no-scrollbar::-webkit-scrollbar{ display:none }
+  .no-scrollbar{ -ms-overflow-style:none; scrollbar-width:none }
+  @keyframes shimmerMove{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+  .shimmer{ background-size:200% 100%; animation:shimmerMove 5s linear infinite }
+  @media (prefers-reduced-motion:reduce){ .shimmer{ animation:none } }
+
+  /* SERVICES */
+  .navy-flare{
+    background-image: linear-gradient(90deg,#0b1220 0%, #0b1220 35%, #ffffff 55%, #0b1220 80%, #0b1220 100%);
+    -webkit-background-clip:text; background-clip:text; color:transparent;
+    text-shadow: 0 1px 0 rgba(255,255,255,.12);
+    background-size: 220% 100%; background-position: 0% 50%;
+    animation: navySweep 7s ease-in-out infinite alternate; white-space: nowrap; will-change: background-position;
+  }
+  @keyframes navySweep{ 0%{background-position:0% 50%} 100%{background-position:100% 50%} }
+  .sv-head{opacity:0; transform:translateY(10px); transition:opacity .7s cubic-bezier(.22,.61,.36,1), transform .7s cubic-bezier(.22,.61,.36,1)}
+  .sv-head.in{opacity:1; transform:none}
+  .sv-underline{transition:width .9s cubic-bezier(.22,.61,.36,1)}
+  .sv-head.in .sv-underline{width:200px}
+  .tier-card{transition:transform .28s cubic-bezier(.22,.61,.36,1), box-shadow .28s cubic-bezier(.22,.61,.36,1)}
+  .tier:hover .tier-card{transform:translateY(-4px); box-shadow:0 26px 64px rgba(2,8,23,.18)}
+  .dark .tier:hover .tier-card{box-shadow:0 30px 70px rgba(0,0,0,.55)}
+  .tier{position:relative}
+  .tier::after{ content:""; pointer-events:none; position:absolute; inset:10px; border-radius:24px; opacity:0;
+    transition:opacity .28s ease, box-shadow .28s ease; box-shadow:0 0 0 0 rgba(255,255,255,0) }
+  .tier:hover::after{ opacity:1; box-shadow:0 0 0 10px rgba(11,15,26,.06) }
+  .dark .tier:hover::after{ box-shadow:0 0 0 10px rgba(255,255,255,.08) }
+  .price-chip{
+    background:#0b0f1a; color:#fff; padding:.42rem .66rem; border-radius:12px; font-size:14px; font-weight:700; line-height:1;
+    box-shadow:0 10px 24px rgba(2,8,23,.18);
+    transition: transform .25s ease, box-shadow .25s ease, background-color .25s ease, color .25s ease
+  }
+  .tier:hover .price-chip{ background:#ffffff; color:#0b0f1a; box-shadow:0 16px 30px rgba(2,8,23,.26); transform:translateY(-1px) }
+  .dark .tier:hover .price-chip{ background:#fff; color:#0b0f1a }
+  #services .reveal{opacity:0; transform:translateY(10px); transition:opacity .45s ease, transform .45s ease}
+  #services .reveal.in{opacity:1; transform:none}
+  @media (prefers-reduced-motion:reduce){
+    .sv-head,#services .reveal,.tier-card,.price-chip,.navy-flare{transition:none}
+    .navy-flare{animation:none; background-position:50% 50%}
+    .sv-head,#services .reveal{opacity:1; transform:none}
+  }
+
+  /* FAQ */
+  #faq details:hover{ box-shadow:0 20px 44px rgba(2,8,23,.10) }
+  #faq details:focus-within{ outline:none; box-shadow:0 0 0 8px rgba(14,165,233,.10), 0 20px 44px rgba(2,8,23,.10); border-color:rgba(14,165,233,.35) }
+
+  /* Toast */
+  .toast{
+    position:fixed; z-index:60; right:16px; bottom:16px; background:linear-gradient(180deg,rgba(255,255,255,.96),rgba(255,255,255,.90));
+    border:1px solid rgba(2,8,23,.08); box-shadow:0 18px 48px rgba(2,8,23,.18); color:#0B0F1A;
+    border-radius:16px; padding:14px 16px; max-width:320px; transform:translateY(18px) scale(.97); opacity:0;
+    transition:all .45s cubic-bezier(.22,.61,.36,1)
+  }
+  .dark .toast{ background:rgba(255,255,255,.08); border-color:rgba(255,255,255,.14); color:#fff }
+  .toast.show{ opacity:1; transform:translateY(0) scale(1) }
+</style>
+
+<!-- ========================= HERO ========================= -->
+<section id="hero" class="relative isolate">
+  <!-- COLOR BACKDROP -->
+  <div class="absolute inset-0 -z-20">
+    <div class="absolute inset-0 bg-gradient-to-b from-white via-white/90 to-white/70
+                dark:from-[#0a0f25] dark:via-[#0a0f25]/95 dark:to-[#0a0f25]/80"></div>
+    <div class="absolute -top-40 -left-28 h-[560px] w-[560px] rounded-full blur-3xl opacity-80
+                bg-[radial-gradient(circle_at_center,rgba(14,165,233,.55),transparent_60%)]
+                dark:opacity-60"></div>
+    <div class="absolute -top-16 -right-24 h-[560px] w-[560px] rounded-full blur-3xl opacity-75
+                bg-[radial-gradient(circle_at_center,rgba(168,85,247,.50),transparent_60%)]
+                dark:opacity-55"></div>
+    <div class="absolute bottom-0 inset-x-0 h-64
+                bg-[radial-gradient(900px_260px_at_50%_120%,rgba(14,165,233,.22),transparent_70%)]
+                dark:bg-[radial-gradient(900px_260px_at_50%_120%,rgba(14,165,233,.28),transparent_70%)]"></div>
+  </div>
+
+  <div class="max-w-6xl mx-auto px-6 pt-10 md:pt-12 pb-10">
+    <!-- Logo blob -->
+    <div class="mx-auto mb-7 flex items-center justify-center">
+      <svg viewBox="0 0 120 120" class="h-12 w-12 logo-blob" aria-hidden="true">
+        <defs>
+          <linearGradient id="g-core" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%"  stop-color="#67E8F9"/>
+            <stop offset="50%" stop-color="#60A5FA"/>
+            <stop offset="100%" stop-color="#D946EF"/>
+          </linearGradient>
+          <filter id="soft" x="-20%" y="-20%" width="140%" height="140%">
+            <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="b"/>
+            <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <circle cx="60" cy="60" r="44" fill="transparent"></circle>
+        <g filter="url(#soft)" fill="url(#g-core)">
+          <path d="M78,32c6,0,11,5,11,11 0,6-5,8-9,12-5,5-5,10-11,10s-9-5-10-10c-2-9,5-23,19-23Z"/>
+          <path d="M43,33c4,0,7,3,7,7s-4,7-8,7-8-3-8-7 5-7 9-7Z"/>
+          <path d="M32,64c0-6,5-10,10-10s8,3,10,7c2,4,4,9,0,12-5,5-20,2-20-9Z"/>
+          <path d="M71,75c4-6,12-8,17-4s6,11,2,16-10,6-15,4c-5-1-8-8-4-16Z"/>
+          <path d="M50,88c0-4,4-7,8-7s8,3,8,7-4,7-8,7-8-3-8-7Z"/>
+          <path d="M90,48c2-3,7-4,10-1 4,3,4,8,1,11-2,2-6,3-9,1-3-1-4-6-2-11Z"/>
+          <circle cx="41" cy="48" r="4.5"/>
+          <circle cx="86" cy="30" r="4.2"/>
+          <circle cx="32" cy="78" r="5"/>
+        </g>
+      </svg>
+    </div>
+
+    <!-- Headline -->
+    <h1 class="text-center font-semibold tracking-tight leading-[1.04]
+               text-[clamp(38px,7vw,70px)] text-ink dark:text-white max-w-[22ch] mx-auto">
+      We don’t just manage.
+      <span class="block anim-gradient">We move brands forward.</span>
+    </h1>
+    <p class="mt-4 text-center text-[15px] md:text-base text-ink/70 dark:text-white/70 max-w-2xl mx-auto">
+      helping brands grow with strategy, creativity, and soul.
+    </p>
+
+    <!-- CTAs -->
+    <div class="mt-7 flex flex-col sm:flex-row items-center justify-center gap-3">
+      <a href="#contact"
+         class="px-6 py-3 rounded-2xl text-white text-sm font-medium
+                bg-gradient-to-r from-ink to-ink hover:from-[#0d1325] hover:to-[#0d1325]
+                shadow-[0_12px_24px_rgba(2,8,23,.22)] hover:shadow-ring
+                hover:translate-y-[-1px] active:translate-y-0 transition">
+        Get Started <span class="ml-1">→</span>
+      </a>
+      <a href="#services"
+         class="px-6 py-3 rounded-2xl text-sm font-medium
+                bg-white/70 text-ink ring-1 ring-black/5
+                shadow-[0_8px_18px_rgba(2,8,23,.08)] hover:bg-white/85
+                dark:bg-white/10 dark:text-white dark:ring-white/10 dark:hover:bg-white/15 transition">
+        See Service Packages
+      </a>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-12 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      {% for s in stats %}
+      <div class="rounded-2xl p-[1px]
+                  bg-[linear-gradient(180deg,rgba(14,165,233,.45),rgba(168,85,247,.42))]
+                  dark:bg-[linear-gradient(180deg,rgba(14,165,233,.55),rgba(168,85,247,.55))]">
+        <div class="rounded-[14px] bg-white/95 dark:bg-white/5 ring-1 ring-black/5 dark:ring-white/10
+                    shadow-[0_14px_36px_rgba(2,8,23,.10)] p-5">
+          <div class="text-[11px] uppercase tracking-[.18em] text-ink/55 dark:text-white/60">{{ s.label }}</div>
+          <div class="mt-2 text-[28px] font-semibold text-ink dark:text-white">{{ s.value }}</div>
+          <div class="mt-2 text-[12px]
+                      {% if s.trend == 'up' %}text-emerald-600 dark:text-emerald-400{% else %}text-rose-600 dark:text-rose-400{% endif %}">
+            {% if s.trend == 'up' %}↑{% else %}↓{% endif %} {{ s.delta }}
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- divider -->
+<div class="mx-auto my-10 h-px w-full max-w-7xl bg-gradient-to-r from-transparent via-black/10 to-transparent dark:via-white/15"></div>
+
+<!-- ========================= LOGO MARQUEE (compact) ========================= -->
+<section class="mt-5 mb-4">
+  <div class="relative w-full overflow-hidden bg-white/70 dark:bg-white/[.04]">
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-14 md:w-20 bg-gradient-to-r from-white dark:from-[#0b0f1a] to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-14 md:w-20 bg-gradient-to-l from-white dark:from-[#0b0f1a] to-transparent"></div>
+
+    <div class="lm-viewport py-1.5 md:py-2">
+      <div class="lm-track" style="--speed:10s">
+        <ul class="lm-list" role="list">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+        <ul class="lm-list" role="list" aria-hidden="true">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+        <ul class="lm-list" role="list" aria-hidden="true">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= ABOUT (Navy band) ========================= -->
+<section id="about-liorae" class="relative bg-[#0a0f25] text-white py-16 md:py-24">
+  <div class="max-w-6xl mx-auto px-6">
+    <!-- Hero Intro -->
+    <div class="text-center max-w-3xl mx-auto">
+      <h2 class="text-3xl md:text-5xl font-serif tracking-tight leading-tight">About Lioraè</h2>
+      <p class="mt-4 text-white/70">
+        We are a creative consultancy that transforms brand presence into measurable growth.
+        From strategy to storytelling, we help businesses craft campaigns that inspire,
+        engage, and convert.
+      </p>
+    </div>
+
+    <!-- Values -->
+    <div class="mt-12 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+      <div class="p-4 bg-white/5 rounded-xl ring-1 ring-white/10">
+        <h3 class="font-semibold">Creativity with Purpose</h3>
+        <p class="text-sm text-white/60 mt-2">Every idea is designed to move the needle.</p>
+      </div>
+      <div class="p-4 bg-white/5 rounded-xl ring-1 ring-white/10">
+        <h3 class="font-semibold">Authenticity</h3>
+        <p class="text-sm text-white/60 mt-2">Stories rooted in truth build stronger connections.</p>
+      </div>
+      <div class="p-4 bg-white/5 rounded-xl ring-1 ring-white/10">
+        <h3 class="font-semibold">Agility</h3>
+        <p class="text-sm text-white/60 mt-2">Weekly iterations, real momentum.</p>
+      </div>
+      <div class="p-4 bg-white/5 rounded-xl ring-1 ring-white/10">
+        <h3 class="font-semibold">Collaboration</h3>
+        <p class="text-sm text-white/60 mt-2">We work as an extension of your team.</p>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+      <div>
+        <p class="text-3xl font-bold counter" data-target="3">0</p><span class="text-3xl font-bold">+</span>
+        <p class="text-white/60 text-sm">Years of Consulting</p>
+      </div>
+      <div>
+        <p class="text-3xl font-bold counter" data-target="50">0</p><span class="text-3xl font-bold">+</span>
+        <p class="text-white/60 text-sm">Campaigns Shipped</p>
+      </div>
+      <div>
+        <p class="text-3xl font-bold counter" data-target="15">0</p><span class="text-3xl font-bold">+</span>
+        <p class="text-white/60 text-sm">Brands Served</p>
+      </div>
+      <div>
+        <p class="text-3xl font-bold counter" data-target="5">0</p>
+        <p class="text-white/60 text-sm">Core Specialists</p>
+      </div>
+    </div>
+
+    <!-- Approach -->
+    <div class="mt-16 max-w-3xl mx-auto text-center">
+      <h3 class="text-2xl font-serif">Our Approach</h3>
+      <p class="mt-4 text-white/70">
+        We pair <span class="font-semibold">weekly-shipped content</span> with
+        <span class="font-semibold">lean funnels, simple automations,</span> and
+        <span class="font-semibold">honest dashboards</span> to turn presence into pipeline.
+      </p>
+    </div>
+
+    <!-- Button to About Page -->
+    <div class="mt-12 text-center">
+      <a href="{% url 'about' %}"
+         class="inline-flex items-center gap-2 rounded-xl bg-white/10 ring-1 ring-white/15 backdrop-blur px-5 py-2.5 text-sm text-white hover:bg-white/15 transition">
+        Learn more about us →
+      </a>
+    </div>
+  </div>
+</section>
+
+<script>
+  // simple counter-up on view
+  (function () {
+    const counters = document.querySelectorAll('#about-liorae .counter');
+    if (!('IntersectionObserver' in window) || !counters.length) return;
+
+    const animate = (el) => {
+      const target = parseInt(el.dataset.target, 10) || 0;
+      let current = 0;
+      const step = Math.max(1, Math.round(target / 60)); // ~1s
+      const tick = () => {
+        current += step;
+        if (current >= target) { el.textContent = target; return; }
+        el.textContent = current;
+        requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    };
+
+    const io = new IntersectionObserver((entries, obs) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          animate(e.target);
+          obs.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.4 });
+
+    counters.forEach(c => io.observe(c));
+  })();
+</script>
+
+
+<!-- ========================= LOGO MARQUEE (compact #2) ========================= -->
+<section class="mt-2 mb-2">
+  <div class="relative w-full overflow-hidden bg-white/70 dark:bg-white/[.04]">
+    <div class="pointer-events-none absolute inset-y-0 left-0 w-14 md:w-20 bg-gradient-to-r from-white dark:from-[#0b0f1a] to-transparent"></div>
+    <div class="pointer-events-none absolute inset-y-0 right-0 w-14 md:w-20 bg-gradient-to-l from-white dark:from-[#0b0f1a] to-transparent"></div>
+
+    <div class="lm-viewport py-1.5 md:py-1">
+      <div class="lm-track" style="--speed:10s">
+        <ul class="lm-list" role="list">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+        <ul class="lm-list" role="list" aria-hidden="true">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+        <ul class="lm-list" role="list" aria-hidden="true">
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Stripe</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Shopify</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">HubSpot</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Notion</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Figma</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Klaviyo</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Meta Ads</span></div></li>
+          <li class="lm-item"><div class="logo-pill"><span class="logo-word">Google Ads</span></div></li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= WORK / SHOWCASE — COSMOS ========================= -->
+<section id="work-cosmos" tabindex="-1" class="relative mt-3 md:mt-0 scroll-mt-28 overflow-hidden">
+  <div aria-hidden="true" class="absolute inset-0 -z-10 bg-[#0a0f25]"></div>
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10 opacity-[.06] mix-blend-soft-light"
+       style="background-image:url('data:image/svg+xml;utf8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2256%22 height=%2256%22 viewBox=%220 0 56 56%22><filter id=%22n%22><feTurbulence type=%22fractalNoise%22 baseFrequency=%220.75%22 numOctaves=%222%22 stitchTiles=%22stitch%22/></filter><rect width=%2256%22 height=%2256%22 filter=%22url(%23n)%22 opacity=%220.4%22/></svg>');">
+  </div>
+
+  <div class="pointer-events-none absolute inset-0 -z-10">
+    <span class="cos-dot"></span><span class="cos-dot delay-1"></span><span class="cos-dot delay-2"></span>
+  </div>
+
+  <div class="max-w-7xl mx-auto px-4 py-10 md:py-12">
+    <div class="grid md:grid-cols-2 gap-10 items-center">
+      <div class="text-white">
+        <p class="text-xs uppercase tracking-[.22em] text-white/60">Lioraè Co. — Recent work</p>
+        <h2 class="mt-2 font-serif tracking-tight leading-[1.05] text-[clamp(34px,6vw,64px)]">
+          Social that turns presence<br/>into pipeline.
+        </h2>
+        <p class="mt-4 text-white/70 max-w-xl">
+          Weekly-shipped campaigns across IG, TikTok, and YouTube—paired with landing pages,
+          simple automations, and honest dashboards. Strategy first. Creative with soul.
+        </p>
+
+        <ul class="mt-4 flex flex-wrap gap-2 text-[12px] text-white/75">
+          <li class="px-2.5 py-1 rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">Strategy & Editorial</li>
+          <li class="px-2.5 py-1 rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">Short-form Content</li>
+          <li class="px-2.5 py-1 rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">Funnels & Landing</li>
+          <li class="px-2.5 py-1 rounded-lg bg-white/10 ring-1 ring-white/15 backdrop-blur">Light Automation + AI</li>
+        </ul>
+
+        <div class="mt-6 flex gap-2">
+          <a href="#contact"
+             class="inline-flex items-center gap-2 rounded-2xl bg-white/10 ring-1 ring-white/15 backdrop-blur px-4 py-2 text-sm text-white hover:bg-white/15 transition">
+            Request full case study <span>→</span>
+          </a>
+          <a href="#services"
+             class="inline-flex items-center gap-2 rounded-2xl bg-white/5 ring-1 ring-white/10 px-4 py-2 text-sm text-white/80 hover:text-white hover:bg-white/10 transition">
+            See packages
+          </a>
+        </div>
+      </div>
+
+      <div id="cosmosStage" class="relative h-[660px] md:h-[720px]">
+        <div aria-hidden="true" class="absolute inset-0 -z-10"
+             style="background:
+                radial-gradient(360px 220px at 70% 35%, rgba(123,129,255,.18), transparent 70%),
+                radial-gradient(360px 220px at 35% 75%, rgba(197,114,255,.18), transparent 70%);
+                filter: blur(30px); opacity:.7;"></div>
+
+        {% with images|slice:":7" as shots %}
+          {% for src in shots %}
+            <figure
+              class="cos-card absolute
+              {% if forloop.counter == 1 %} left-[6%] top-[10%] w-[40%] h-[38%]
+              {% elif forloop.counter == 2 %} right-[4%] top-[6%] w-[42%] h-[42%]
+              {% elif forloop.counter == 3 %} left-[52%] top-[52%] w-[36%] h-[34%]
+              {% elif forloop.counter == 4 %} left-[10%] top-[54%] w-[28%] h-[32%]
+              {% elif forloop.counter == 5 %} right-[14%] top-[48%] w-[22%] h-[22%]
+              {% elif forloop.counter == 6 %} left-[36%] top-[18%] w-[22%] h-[22%]
+              {% else %} right-[30%] bottom-[6%] w-[22%] h-[22%]
+              {% endif %} will-change-transform"
+              data-depth="{{ forloop.counter }}">
+              <img src="{{ src }}" alt="Lioraè campaign {{ forloop.counter }}"
+                   class="block w-full h-full object-cover rounded-xl shadow-[0_20px_60px_rgba(0,0,0,.45)]" />
+              <figcaption class="absolute left-2 bottom-2 px-2.5 py-1 rounded-lg text-[11px] text-white/90
+                                 bg-white/10 ring-1 ring-white/15 backdrop-blur">
+                Lioraè • Campaign #{{ forloop.counter }}
+              </figcaption>
+            </figure>
+          {% endfor %}
+        {% endwith %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= TESTIMONIALS ========================= -->
+<section id="testimonials" tabindex="-1" class="mt-20 scroll-mt-28">
+  <style>
+    /* ===== marquee core ===== */
+    .tm-viewport{ position:relative; overflow:hidden; }
+    .tm-track{ display:flex; gap:24px; will-change:transform; animation: tm var(--speed, 40s) linear infinite; }
+    .tm-track.ltr{ animation-name: tm-rev; }
+    .tm-list{ display:flex; gap:24px; margin:0; padding:0; list-style:none; }
+    .tm-item{ flex:0 0 auto; }
+    @keyframes tm{ from{transform:translateX(0)} to{transform:translateX(calc(-1 * var(--tm-w, 0px)))} }
+    @keyframes tm-rev{ from{transform:translateX(calc(-1 * var(--tm-w, 0px)))} to{transform:translateX(0)} }
+    .tm-viewport:hover .tm-track{ animation-play-state:paused; }
+
+    /* ===== card look (matches reference) ===== */
+    .tm-card{
+      width:320px; /* md widens via utility below */
+      border-radius:24px;
+      background:rgba(255,255,255,.95);
+      border:1px solid rgba(2,8,23,.12);
+      box-shadow:0 12px 32px rgba(2,8,23,.08);
+      padding:20px;
+    }
+    @media (min-width:768px){ .tm-card{ width:420px; border-radius:26px; padding:22px; } }
+    .tm-name{ font-weight:700; color:#0b0f1a; }
+    .tm-role{ color:rgba(11,15,26,.6); font-size:.9rem; }
+    .tm-quote{ color:rgba(11,15,26,.8); line-height:1.6; font-size:15px; margin-top:10px; }
+    .tm-dot{ width:6px; height:6px; border-radius:9999px; background:rgba(11,15,26,.35); display:inline-block; margin-left:8px; vertical-align:middle; }
+
+    /* stars */
+    .tm-stars{ display:flex; gap:6px; margin-top:12px; }
+    .tm-star{ width:18px; height:18px; color:#0b0f1a; }
+    .tm-star.off{ color:rgba(11,15,26,.25); }
+
+    /* subtle edge fades */
+    .tm-fadeL, .tm-fadeR{
+      position:absolute; top:0; bottom:0; width:60px; pointer-events:none;
+      background:linear-gradient(to right, rgba(255,255,255,1), rgba(255,255,255,0));
+    }
+    .tm-fadeR{ right:0; left:auto; transform:rotate(180deg); }
+    @media (prefers-color-scheme: dark){
+      .tm-card{ background:rgba(255,255,255,.06); border-color:rgba(255,255,255,.15); box-shadow:0 12px 32px rgba(2,8,23,.18); }
+      .tm-name{ color:#fff; } .tm-role{ color:rgba(255,255,255,.7); }
+      .tm-quote{ color:rgba(255,255,255,.8); }
+      .tm-star{ color:#fff; } .tm-star.off{ color:rgba(255,255,255,.3); }
+      .tm-fadeL, .tm-fadeR{ background:linear-gradient(to right, rgba(11,15,26,1), rgba(11,15,26,0)); }
+    }
+
+    /* thin separators (keep your original look) */
+    .tm-sep{ position:relative; height:1px; width:100%; max-width:72rem; margin:2rem auto; }
+    .tm-sep::after{ content:""; position:absolute; inset:0; background:rgba(0,0,0,.1); }
+    @media (prefers-color-scheme: dark){ .tm-sep::after{ background:rgba(255,255,255,.15); } }
+  </style>
+
+  <!-- top separator -->
+  <div class="tm-sep"></div>
+
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="text-center">
+      <h2 class="font-extrabold tracking-tight text-ink dark:text-white leading-[1.05] text-[clamp(32px,6vw,50px)]">
+        What clients say
+      </h2>
+      <div class="relative mx-auto mt-3 h-[3px] w-36 md:w-52 rounded-full shimmer
+                  bg-gradient-to-r from-sky-400/70 via-indigo-500/80 to-violet-500/70
+                  dark:from-sky-300/70 dark:via-indigo-400/80 dark:to-violet-400/70"></div>
+    </div>
+
+    <!-- ===== ROW 1 (right -> left) ===== -->
+    <div class="relative mt-8">
+      <div class="tm-fadeL"></div><div class="tm-fadeR"></div>
+      <div class="tm-viewport">
+        <div class="tm-track rtl">
+          <ul class="tm-list">
+            <!-- Card 1 -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=32" alt="Mia Reynolds" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Mia Reynolds</div>
+                    <div class="tm-role">Creative Director</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  Working with Lioraè was smooth from day one. The designs were sharp, the communication was clear, and delivery was on point.
+                  <span class="tm-dot"></span>
+                </blockquote>
+                <div class="tm-stars" aria-label="5 out of 5 stars">
+                  <!-- 5 stars -->
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+
+            <!-- Card 2 -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=11" alt="Daniel Cho" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Daniel Cho</div>
+                    <div class="tm-role">Nonprofit Executive</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  Our brand finally feels aligned with our mission. Their process helped us define what we stand for visually and strategically.
+                </blockquote>
+                <div class="tm-stars" aria-label="5 out of 5 stars">
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+
+            <!-- Card 3 -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=5" alt="Clara Morales" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Clara Morales</div>
+                    <div class="tm-role">SaaS Product Manager</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  From moodboards to final launch, their attention to detail was flawless. It felt like having an in-house design team.
+                </blockquote>
+                <div class="tm-stars" aria-label="4 out of 5 stars">
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star off" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+
+            <!-- Card 4 -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=21" alt="Evan Dorsey" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Evan Dorsey</div>
+                    <div class="tm-role">Tech Startup Co-Founder</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  Tight timeline, zero compromises. They delivered without sacrificing quality—we were blown away.
+                </blockquote>
+                <div class="tm-stars" aria-label="4 out of 5 stars">
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star off" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+          </ul>
+
+          <!-- duplicate for seamless loop -->
+          <ul class="tm-list" aria-hidden="true">
+            <!-- same four cards duplicated -->
+            <!-- (You may duplicate programmatically later; kept explicit for clarity) -->
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=32" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Mia Reynolds</div><div class="tm-role">Creative Director</div></div></div><blockquote class="tm-quote">Working with Lioraè was smooth from day one. The designs were sharp, the communication was clear, and delivery was on point.<span class="tm-dot"></span></blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=11" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Daniel Cho</div><div class="tm-role">Nonprofit Executive</div></div></div><blockquote class="tm-quote">Our brand finally feels aligned with our mission. Their process helped us define what we stand for visually and strategically.</blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=5" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Clara Morales</div><div class="tm-role">SaaS Product Manager</div></div></div><blockquote class="tm-quote">From moodboards to final launch, their attention to detail was flawless. It felt like having an in-house design team.</blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star off" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=21" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Evan Dorsey</div><div class="tm-role">Tech Startup Co-Founder</div></div></div><blockquote class="tm-quote">Tight timeline, zero compromises. They delivered without sacrificing quality—we were blown away.</blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star off" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    <!-- ===== ROW 2 (left -> right) ===== -->
+    <div class="relative mt-8">
+      <div class="tm-fadeL"></div><div class="tm-fadeR"></div>
+      <div class="tm-viewport">
+        <div class="tm-track ltr">
+          <ul class="tm-list">
+            <!-- Card A -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=47" alt="Tasha Young" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Tasha Young</div>
+                    <div class="tm-role">Boutique Owner</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  This wasn’t just a design upgrade—it was a mindset shift. We finally feel proud to share our website.
+                </blockquote>
+                <div class="tm-stars" aria-label="5 out of 5 stars">
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+
+            <!-- Card B -->
+            <li class="tm-item">
+              <figure class="tm-card">
+                <div class="flex items-center gap-3">
+                  <img src="https://i.pravatar.cc/80?img=58" alt="Ava Nishi" class="w-10 h-10 rounded-full object-cover">
+                  <div>
+                    <div class="tm-name">Ava Nishi</div>
+                    <div class="tm-role">First-Time Entrepreneur</div>
+                  </div>
+                </div>
+                <blockquote class="tm-quote">
+                  Lioraè helped us go from zero to launch with confidence. Their templates saved us weeks of work.
+                </blockquote>
+                <div class="tm-stars" aria-label="5 out of 5 stars">
+                  <svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>
+                </div>
+              </figure>
+            </li>
+          </ul>
+
+          <!-- duplicate for seamless loop -->
+          <ul class="tm-list" aria-hidden="true">
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=47" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Tasha Young</div><div class="tm-role">Boutique Owner</div></div></div><blockquote class="tm-quote">This wasn’t just a design upgrade—it was a mindset shift. We finally feel proud to share our website.</blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+            <li class="tm-item"><figure class="tm-card"><div class="flex items-center gap-3"><img src="https://i.pravatar.cc/80?img=58" class="w-10 h-10 rounded-full object-cover" alt=""><div><div class="tm-name">Ava Nishi</div><div class="tm-role">First-Time Entrepreneur</div></div></div><blockquote class="tm-quote">Lioraè helped us go from zero to launch with confidence. Their templates saved us weeks of work.</blockquote><div class="tm-stars"><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg><svg class="tm-star" viewBox="0 0 24 24" fill="currentColor"><path d="M12 17.27 18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg></div></figure></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- bottom separator -->
+  <div class="tm-sep mt-10"></div>
+
+  <script>
+    // Seamless width + speed sync for both rows
+    (function(){
+      const tracks = document.querySelectorAll('#testimonials .tm-track');
+      tracks.forEach(track=>{
+        const firstList = track.querySelector('.tm-list');
+        const setVars = () => {
+          const w = firstList.scrollWidth;
+          track.style.setProperty('--tm-w', w + 'px');
+          const pxPerSec = 120;                      // motion speed
+          const dur = Math.max(20, Math.round(w/pxPerSec));
+          track.style.setProperty('--speed', dur + 's');
+        };
+        setVars();
+        window.addEventListener('load', setVars);
+        window.addEventListener('resize', setVars);
+        if ('ResizeObserver' in window) new ResizeObserver(setVars).observe(firstList);
+      });
+    })();
+  </script>
+</section>
+
+
+<!-- ========================= SERVICE TIERS ========================= -->
+<section id="services" tabindex="-1" class="relative mt-24 scroll-mt-20">
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
+    <div class="absolute inset-0" style="background:#0b1220"></div>
+    <div class="absolute inset-0"
+         style="mask-image: radial-gradient(120% 60% at 50% -10%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.8) 55%, rgba(0,0,0,1) 70%);
+                -webkit-mask-image: radial-gradient(120% 60% at 50% -10%, rgba(0,0,0,.0) 0%, rgba(0,0,0,.8) 55%, rgba(0,0,0,1) 70%);
+                background: linear-gradient(to bottom, rgba(255,255,255,.02), rgba(255,255,255,0));">
+    </div>
+  </div>
+
+  <div class="relative max-w-7xl mx-auto px-4 pt-12 md:pt-16">
+    <header id="servicesHead" class="sv-head text-center">
+      <h2 class="font-semibold tracking-tight leading-tight text-[clamp(28px,5vw,48px)] text-white">
+        <span class="navy-flare">Service Packages</span>
+      </h2>
+      <div class="mx-auto mt-3 h-[3px] w-0 bg-white/60 rounded-full sv-underline"></div>
+      <p class="mt-4 text-[15px] md:text-base text-white/70 max-w-3xl mx-auto">
+        Growth-ready social programs that blend <strong class="text-white">strategy</strong>,
+        <strong class="text-white">creation</strong>, and <strong class="text-white">light automation</strong>—
+        built to increase <strong class="text-white">engagement</strong>, <strong class="text-white">leads</strong>, and <strong class="text-white">ROI</strong>.
+      </p>
+      <p class="mt-1.5 text-xs text-white/55">Monthly retainers • Upgrade or customize anytime</p>
+    </header>
+
+    <div id="tiers" class="mt-10 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+      {% for t in tiers %}
+      <article class="tier reveal group relative">
+        <div class="rounded-3xl p-[1px] bg-white/10 transition-colors group-hover:bg-white/20">
+          <div class="tier-card relative rounded-[22px] bg-white p-6 ring-1 ring-black/5 shadow-[0_18px_46px_rgba(2,8,23,.14)]">
+            <div class="flex items-start justify-between gap-4">
+              <div>
+                <h3 class="text-[22px] md:text-[24px] font-semibold text-[#0b0f1a] tracking-tight">{{ t.name }}</h3>
+                <p class="mt-0.5 text-[13px] text-black/60">{{ t.tag }}</p>
+                {% if t.badge %}
+                <span class="mt-2 inline-flex items-center px-2.5 py-1 rounded-full text-[11px] bg-black/[.06] text-black/80 ring-1 ring-black/10">{{ t.badge }}</span>
+                {% endif %}
+              </div>
+              <div class="price-chip shrink-0">{{ t.price }}</div>
+            </div>
+
+            <ul class="mt-4 space-y-2 text-[15px] text-black/80">
+              {% for b in t.bullets %}
+              <li class="flex gap-2">
+                <span class="mt-[9px] h-1.5 w-1.5 rounded-full bg-black/70"></span>
+                <span>{{ b }}</span>
+              </li>
+              {% endfor %}
+            </ul>
+
+            <a href="#contact"
+               class="mt-5 inline-flex items-center justify-center px-4 py-2 rounded-xl text-sm font-medium
+                      bg-[#0b0f1a] text-white focus:outline-none focus-visible:ring-4 focus-visible:ring-white/20
+                      transition transform-gpu hover:-translate-y-[1px] active:translate-y-0
+                      hover:shadow-[0_22px_60px_rgba(2,8,23,.22)]">
+              Choose {{ t.name }}
+              <svg class="ml-2 h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707A1 1 0 018.707 5.293L12.414 9a1 1 0 010 2l-3.707 3.707a1 1 0 01-1.414 0z"/>
+              </svg>
+            </a>
+          </div>
+        </div>
+
+        {% if t.wide %}
+        <span class="absolute -top-2 -right-2 rounded-full bg-white text-[#0b0f1a] text-[11px] font-semibold px-2.5 py-1 shadow-soft">Popular</span>
+        {% endif %}
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+
+  <div class="relative mx-auto mt-14 h-px w-full max-w-7xl bg-white/10"></div>
+</section>
+
+<!-- ========================= PROCESS ========================= -->
+<section id="process" tabindex="-1" class="mt-20 scroll-mt-28">
+  <div class="max-w-7xl mx-auto px-4">
+    <h2 class="section-title">Process</h2>
+
+    <div class="mt-8 relative pb-10 sm:pb-12">
+      <div class="hidden sm:block pointer-events-none absolute left-0 right-0 top-12 h-1.5 rounded-full bg-gradient-to-r from-sky-400 via-indigo-500 to-violet-500 opacity-80"></div>
+      <div class="sm:hidden pointer-events-none absolute left-6 top-0 bottom-0 w-1 rounded-full bg-gradient-to-b from-sky-400 via-indigo-500 to-violet-500 opacity-80"></div>
+
+      <ol class="flex flex-col gap-6 sm:grid sm:grid-cols-5 sm:gap-6 relative z-10">
+        {% for step in steps %}
+        <li class="relative">
+          <div class="sm:hidden absolute -left-[2px] top-2 h-10 w-10 rounded-full ring-2 ring-transparent p-[2px]
+                      bg-[linear-gradient(#fff,#fff),linear-gradient(120deg,#0EA5E9,#A855F7)]
+                      bg-clip-padding bg-origin-border shadow-[0_8px_22px_rgba(2,8,23,.12)]
+                      dark:bg-[linear-gradient(rgba(255,255,255,.08),rgba(255,255,255,.08)),linear-gradient(120deg,#67e8f9,#d8b4fe)]">
+            <div class="h-full w-full rounded-full bg-white dark:bg-white/10 flex items-center justify-center text-[12px] font-semibold text-ink dark:text-white">{{ forloop.counter }}</div>
+          </div>
+
+          <div class="rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_10px_28px_rgba(2,8,23,.08)]
+                      p-4 pl-16 sm:pl-4 sm:bg-transparent sm:border-0 sm:shadow-none sm:p-0 sm:pt-16">
+            <div class="hidden sm:flex items-center justify-center -mt-14 mb-3">
+              <div class="h-12 w-12 rounded-full ring-2 ring-transparent p-[2px]
+                          bg-[linear-gradient(#fff,#fff),linear-gradient(120deg,#0EA5E9,#A855F7)]
+                          bg-clip-padding bg-origin-border shadow-[0_8px_22px_rgba(2,8,23,.12)]
+                          dark:bg-[linear-gradient(rgba(255,255,255,.08),rgba(255,255,255,.08)),linear-gradient(120deg,#67e8f9,#d8b4fe)]">
+                <div class="h-full w-full rounded-full bg-white dark:bg-white/10 flex items-center justify-center text-[13px] font-semibold text-ink dark:text-white">{{ forloop.counter }}</div>
+              </div>
+            </div>
+
+            <div class="sm:text-center">
+              <div class="text-[11px] uppercase tracking-[.18em] text-ink/50 dark:text-white/60">Step {{ forloop.counter }}</div>
+              <div class="mt-0.5 text-lg font-semibold text-ink dark:text-white">{{ step }}</div>
+
+              {% if forloop.counter == 1 %}
+                <p class="mt-1.5 text-[13px] text-ink/65 dark:text-white/65">Kickoff, audit, goals, audience.</p>
+              {% elif forloop.counter == 2 %}
+                <p class="mt-1.5 text-[13px] text-ink/65 dark:text-white/65">Messaging, pillars, campaign roadmap.</p>
+              {% elif forloop.counter == 3 %}
+                <p class="mt-1.5 text-[13px] text-ink/65 dark:text-white/65">Stack setup: scheduler, CRM, pixels.</p>
+              {% elif forloop.counter == 4 %}
+                <p class="mt-1.5 text-[13px] text-ink/65 dark:text-white/65">AI captions, best-time posts, automations.</p>
+              {% else %}
+                <p class="mt-1.5 text-[13px] text-ink/65 dark:text-white/65">Weekly reviews, iterate, scale winners.</p>
+              {% endif %}
+            </div>
+          </div>
+        </li>
+        {% endfor %}
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= FAQ ========================= -->
+<section id="faq" tabindex="-1" class="mt-24 scroll-mt-28">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid md:grid-cols-2 gap-10 lg:gap-14 items-start">
+      <div class="pointer-events-none absolute inset-0 -z-10">
+        <div class="absolute inset-0 bg-white/70 dark:bg-white/[.04] backdrop-blur-[2px]"></div>
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[900px] bg-[radial-gradient(500px_220px_at_50%_0%,rgba(14,165,233,.14),transparent_70%)]"></div>
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[380px] w-[900px] bg-[radial-gradient(520px_220px_at_50%_100%,rgba(168,85,247,.12),transparent_70%)]"></div>
+      </div>
+
+      <aside class="order-2 md:order-1">
+        <div class="relative rounded-3xl overflow-hidden border border-line/70 dark:border-white/15 bg-white/95 dark:bg-white/[.06] shadow-[0_22px_60px_rgba(2,8,23,.10)]">
+          <div class="absolute inset-0 opacity-90 dark:opacity-100">
+            <div class="absolute -top-24 -left-20 h-[420px] w-[420px] rounded-full blur-3xl bg-[radial-gradient(circle_at_center,rgba(14,165,233,.35),transparent_60%)]"></div>
+            <div class="absolute -bottom-24 -right-20 h-[420px] w-[420px] rounded-full blur-3xl bg-[radial-gradient(circle_at_center,rgba(168,85,247,.35),transparent_60%)]"></div>
+          </div>
+          <div class="relative aspect-[4/3] flex items-center justify-center p-8">
+            <svg viewBox="0 0 300 300" class="w-full max-w-[460px] drop-shadow-xl" aria-hidden="true">
+              <defs><linearGradient id="faq-g" x1="0" y1="1" x2="1" y2="0"><stop offset="0%" stop-color="#a855f7"/><stop offset="100%" stop-color="#06b6d4"/></linearGradient></defs>
+              <g fill="url(#faq-g)">
+                <path d="M116 220c-10 20-40 20-52 2-12-18 1-44 21-48 28-6 18-32 44-40 26-9 43 23 64 18 27-7 25-49-1-63-40-20-83 8-94-13-11-21 17-42 49-44 55-4 103 42 107 93 4 54-38 106-97 111-22 2-40-5-41-16z"/>
+                <circle cx="228" cy="86" r="16"/><circle cx="84" cy="248" r="14"/><circle cx="68" cy="92" r="12"/>
+              </g>
+            </svg>
+          </div>
+          <div class="px-6 pb-6 -mt-2">
+            <p class="text-sm text-ink/70 dark:text-white/70">Clear, no-fluff answers to help you decide faster.</p>
+          </div>
+        </div>
+      </aside>
+
+      <div class="order-1 md:order-2">
+        <header class="text-center md:text-left">
+          <h2 class="text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-ink dark:text-white">
+            Answers, fast. <span class="bg-clip-text text-transparent bg-gradient-to-r from-sky-500 to-violet-500">Your Social Media FAQs</span>
+          </h2>
+          <p class="mt-3 text-ink/70 dark:text-white/70 max-w-2xl md:max-w-none">
+            Everything founders ask us about <strong>strategy</strong>, <strong>content</strong>, <strong>reels</strong>,
+            <strong>community growth</strong>, and <strong>AI-powered automation</strong>—so you can scale presence and pipeline without scaling headcount.
+          </p>
+        </header>
+
+        <div class="mt-10 space-y-4 divide-y divide-line/70 dark:divide-white/15">
+          {% comment %} FAQ items preserved for SEO {% endcomment %}
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">Do I need a website to start with your services?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">Not necessarily. If you don’t have one yet, we can build a starter landing page as part of our packages to give your brand a digital home.</p></div>
+          </details>
+
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">How does AI help my business if I’m a small startup?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">AI saves you time and maximizes results—from generating on-brand captions to predicting the best posting times and automating lead capture. It makes your business more efficient, even with a small team.</p></div>
+          </details>
+
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">What if I only need Social Media Management?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">Our packages are designed to scale. You can start with social foundations (Tier 1) and later upgrade to include web funnels, automation, and AI tools as your business grows.</p></div>
+          </details>
+
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">How long before I see results?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">Most clients see improved engagement and visibility in the first 1–2 months, while lead conversions and ROI typically become clear within 3–6 months of consistent campaigns.</p></div>
+          </details>
+
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">Who owns the content and tools you create for us?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">All content, websites, and customized AI tools we create for you belong to your business. We manage and optimize them on your behalf.</p></div>
+          </details>
+
+          <details class="group rounded-2xl bg-white/95 dark:bg-white/[.06] border border-line/70 dark:border-white/15 shadow-[0_16px_36px_rgba(2,8,23,.06)] open:shadow-[0_20px_40px_rgba(2,8,23,.10)] transition-shadow px-5 py-4">
+            <summary class="cursor-pointer list-none flex items-center justify-between gap-6">
+              <span class="text-[17px] sm:text-lg font-medium text-ink dark:text-white">What makes this different from hiring separate freelancers or agencies?</span>
+              <svg class="h-5 w-5 shrink-0 text-ink/60 dark:text-white/60 transition-transform group-open:rotate-180" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M5.23 7.21a.75.75 0 0 1 1.06.02L10 10.59l3.71-3.36a.75.75 0 1 1 1.04 1.08l-4.23 3.82a.75.75 0 0 1-1.04 0L5.21 8.31a.75.75 0 0 1 .02-1.1z"/></svg>
+            </summary>
+            <div class="pt-3"><p class="text-[15px] leading-7 text-ink/75 dark:text-white/75">With us, you get an all-in-one growth system: creative storytelling, tech integration, and AI-powered automation—saving you time, cost, and the hassle of coordinating multiple providers.</p></div>
+          </details>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= CONTACT ========================= -->
+<section id="contact" tabindex="-1" class="relative mt-20 scroll-mt-28">
+  <div class="max-w-7xl mx-auto px-4">
+    <div class="grid gap-6 md:grid-cols-3">
+      <!-- FORM -->
+      <div class="md:col-span-2 rounded-3xl border border-line/70 bg-white/95 dark:bg-white/[.06] dark:border-white/15 shadow-[0_18px_50px_rgba(2,8,23,.10)]">
+        <div class="p-6 md:p-10">
+          <div class="flex items-start justify-between gap-4">
+            <div>
+              <h2 class="text-[22px] md:text-2xl font-semibold text-ink dark:text-white">Let’s map your growth.</h2>
+              <p class="mt-1.5 text-ink/75 dark:text-white/75">Share a few details so we can recommend the right mix—or tailor a custom plan.</p>
+            </div>
+            <span class="hidden md:inline-flex items-center rounded-full px-2.5 py-1 text-[11px] font-medium bg-gradient-to-r from-sky-400/15 to-violet-500/15 text-ink/80 dark:text-white/85 ring-1 ring-black/5 dark:ring-white/10">⏱ ~24h response</span>
+          </div>
+
+          <form method="post" action="{% url 'contact_submit' %}" class="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+            {% csrf_token %}
+            <input type="text" name="hp" class="hidden" tabindex="-1" autocomplete="off">
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Full name</label>
+              <input name="full_name" required type="text" placeholder="Jane Doe"
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Email</label>
+              <input name="email" required type="email" placeholder="you@company.com"
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Company / Brand</label>
+              <input name="company" type="text" placeholder="Lioraè Co."
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Website / Social</label>
+              <input name="website" type="text" placeholder="liorae.co / @liorae"
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Monthly budget</label>
+              <select name="budget" required
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+                <option value="" selected disabled>Choose a range</option>
+                <option value="50-75">PHP 50k – 75k</option>
+                <option value="75-120">PHP 75k – 120k</option>
+                <option value="120-200">PHP 120k – 200k</option>
+                <option value="200+">PHP 200k+</option>
+              </select>
+            </div>
+
+            <div class="flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Timeline</label>
+              <select name="timeline" required
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400">
+                <option value="asap" selected>ASAP (0–2 weeks)</option>
+                <option value="1m">1 month</option>
+                <option value="3m">3 months</option>
+                <option value="6m+">6+ months</option>
+              </select>
+            </div>
+
+            <div class="mt-2 flex flex-wrap gap-2 md:col-span-2">
+              {% for label in service_labels %}
+                <label class="inline-block">
+                  <input type="checkbox" name="services" value="{{ label }}" class="peer hidden">
+                  <span class="inline-flex items-center px-3.5 py-2 rounded-xl text-sm
+                               bg-white/90 dark:bg-white/[.08] border border-line/70 dark:border-white/15
+                               text-ink/80 dark:text-white/85
+                               peer-checked:bg-ink peer-checked:text-white dark:peer-checked:bg-white dark:peer-checked:text-ink transition">
+                    {{ label }}
+                  </span>
+                </label>
+              {% endfor %}
+            </div>
+
+            <div class="md:col-span-2 flex flex-col gap-1">
+              <label class="text-xs font-medium text-ink/70 dark:text-white/70">Goals / context</label>
+              <textarea name="message" required placeholder="e.g., hit 20k IG, convert via landing page, automate DMs"
+                class="w-full rounded-xl border border-line/70 bg-white/90 dark:bg-white/[.08] dark:border-white/15 px-3.5 py-2.5 text-sm text-ink dark:text-white h-32 focus:outline-none focus:ring-4 focus:ring-sky-400/20 focus:border-sky-400"></textarea>
+              <p class="mt-1 text-xs text-ink/60 dark:text-white/60">Tip: include KPIs, audience, and primary channel.</p>
+            </div>
+
+            <div class="md:col-span-2 flex flex-col sm:flex-row items-start sm:items-center gap-3">
+              <button type="submit"
+                class="px-5 py-3 rounded-xl bg-ink text-white text-sm font-medium hover:shadow-ring hover:translate-y-[-1px] active:translate-y-0 transition dark:bg-white dark:text-ink">
+                Request Proposal
+              </button>
+              <a href="mailto:hello@liorae.co" class="link-muted">Prefer email? hello@liorae.co</a>
+            </div>
+
+            <div class="md:col-span-2">
+              <p class="text-[12px] text-ink/55 dark:text-white/60">We only use your details to respond to this inquiry. No spam—ever.</p>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- TRUST / NEXT STEP -->
+      <aside class="md:sticky md:top-24 h-max rounded-3xl border border-line/70 bg-white/95 dark:bg-white/[.06] dark:border-white/15 shadow-[0_18px_50px_rgba(2,8,23,.10)] p-6 md:p-7">
+        <div class="rounded-2xl p-4 bg-gradient-to-r from-sky-400/15 to-violet-500/15">
+          <div class="text-[12px] uppercase tracking-[.18em] text-ink/60 dark:text-white/70">Next step</div>
+          <div class="mt-1 text-[15px] font-medium text-ink dark:text-white">Free 20-min discovery call</div>
+          <p class="mt-1 text-[13px] text-ink/70 dark:text-white/70">Quick fit check, goals, and a draft plan.</p>
+          <a href="#contact" class="mt-3 inline-flex items-center justify-center rounded-xl bg-ink text-white text-sm px-4 py-2 hover:shadow-ring hover:translate-y-[-1px] active:translate-y-0 transition dark:bg-white dark:text-ink">Book a Call →</a>
+        </div>
+
+        <ul class="mt-5 space-y-3 text-[14px] text-ink/80 dark:text-white/80">
+          <li class="flex gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-emerald-400"></span> Strategy-first, no fluff content</li>
+          <li class="flex gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-sky-400"></span> Measurable outcomes & dashboards</li>
+          <li class="flex gap-2"><span class="mt-1 h-1.5 w-1.5 rounded-full bg-violet-500"></span> AI workflows that save hours</li>
+        </ul>
+
+        <div class="mt-6 grid grid-cols-3 gap-2 text-center text-[11px]">
+          <div class="rounded-xl border border-line/70 dark:border-white/15 py-2">
+            <div class="font-semibold text-ink dark:text-white">48%</div>
+            <div class="text-ink/60 dark:text-white/60">Avg engagement</div>
+          </div>
+          <div class="rounded-xl border border-line/70 dark:border-white/15 py-2">
+            <div class="font-semibold text-ink dark:text-white">3–6 mo</div>
+            <div class="text-ink/60 dark:text-white/60">ROI horizon</div>
+          </div>
+          <div class="rounded-xl border border-line/70 dark:border-white/15 py-2">
+            <div class="font-semibold text-ink dark:text-white">Omni</div>
+            <div class="text-ink/60 dark:text-white/60">Channel mix</div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ========================= SCRIPTS (all at bottom) ========================= -->
+<script>
+  // ABOUT — reveal on view
+  (function(){
+    if(!('IntersectionObserver'in window)){ document.querySelectorAll('#about .reveal').forEach(el=>el.classList.add('in')); return; }
+    const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ e.target.classList.add('in'); io.unobserve(e.target); } }); },{threshold:.15});
+    document.querySelectorAll('#about .reveal').forEach(el=>io.observe(el));
+  })();
+
+  // COSMOS — entrance + pointer parallax
+  (function(){
+    const stage = document.getElementById('cosmosStage');
+    if(!stage) return;
+    const cards = stage.querySelectorAll('.cos-card');
+    cards.forEach((el, i)=> setTimeout(()=> el.classList.add('show'), 120 + i*80));
+    let tx = 0, ty = 0, ix = 0, iy = 0;
+    const lerp = (a,b,t)=> a + (b-a)*t;
+    stage.addEventListener('pointermove', (e)=>{
+      const r = stage.getBoundingClientRect();
+      tx = (e.clientX - r.left)/r.width  - .5;
+      ty = (e.clientY - r.top )/r.height - .5;
+    }, {passive:true});
+    (function tick(){
+      ix = lerp(ix, tx, 0.06); iy = lerp(iy, ty, 0.06);
+      cards.forEach((el)=>{
+        const d = Math.min(+el.dataset.depth || 1, 6);
+        el.style.setProperty('--dx', (ix * (3.5 * d)) + 'px');
+        el.style.setProperty('--dy', (iy * (3.0 * d)) + 'px');
+      });
+      requestAnimationFrame(tick);
+    })();
+  })();
+
+  // TESTIMONIALS — simple rail controls + auto-advance
+  (function(){
+    const track = document.getElementById('tsTrack');
+    if(!track) return;
+    const prev  = document.getElementById('tsPrev');
+    const next  = document.getElementById('tsNext');
+    const cardW = () => track.querySelector('figure')?.getBoundingClientRect().width + 16 || 360;
+    prev?.addEventListener('click', ()=> track.scrollBy({left: -cardW(), behavior:'smooth'}));
+    next?.addEventListener('click', ()=> track.scrollBy({left:  cardW(), behavior:'smooth'}));
+    let timer = setInterval(()=> next?.click(), 4200);
+    track.addEventListener('pointerdown', ()=> { clearInterval(timer); timer=null; }, {passive:true});
+  })();
+
+  // SERVICES — heading underline + card reveals
+  (function(){
+    const head=document.getElementById('servicesHead');
+    if(head && 'IntersectionObserver'in window){
+      const io=new IntersectionObserver(es=>{ es.forEach(e=>{ if(e.isIntersecting){ head.classList.add('in'); io.disconnect(); } });},{threshold:.3});
+      io.observe(head);
+    } else { head?.classList.add('in'); }
+    const cards=document.querySelectorAll('#tiers .reveal');
+    if(cards.length && 'IntersectionObserver'in window){
+      const io2=new IntersectionObserver(es=>{
+        es.forEach(e=>{
+          if(e.isIntersecting){
+            const i=Array.from(cards).indexOf(e.target);
+            e.target.style.transitionDelay=(i*70)+'ms';
+            e.target.classList.add('in');
+            io2.unobserve(e.target);
+          }
+        });
+      },{threshold:.12});
+      cards.forEach(c=>io2.observe(c));
+    } else { cards.forEach(c=>c.classList.add('in')); }
+  })();
+
+  // CONTACT — toast after successful submit (?ok=1)
+  (function(){
+    const p=new URLSearchParams(location.hash.slice(1) || location.search.slice(1));
+    if(p.get('ok')==='1'){
+      const el=document.createElement('div');
+      el.className='toast';
+      el.innerHTML=`<div class="flex items-start gap-3">
+          <div class="shrink-0 h-8 w-8 rounded-xl bg-gradient-to-br from-sky-400 to-violet-500 flex items-center justify-center text-white">✨</div>
+          <div><div class="font-semibold">Wow! Thanks, future billionaire 🚀</div>
+          <div class="text-sm opacity-80 mt-0.5">We got your message and emailed you a quick recap. Talk soon!</div></div>
+          <button aria-label="Close" class="ml-2 opacity-60 hover:opacity-100">✖</button></div>`;
+      document.body.appendChild(el);
+      requestAnimationFrame(()=> el.classList.add('show'));
+      const close=()=> el.classList.remove('show');
+      el.querySelector('button')?.addEventListener('click', close);
+      setTimeout(close, 5500);
+      history.replaceState(null,'',location.pathname + '#contact');
+    }
+  })();
+</script>
+
+<!-- SEO: FAQPage structured data (kept at bottom with other scripts) -->
+<script type="application/ld+json">
+{
+  "@context":"https://schema.org","@type":"FAQPage",
+  "mainEntity":[
+    {"@type":"Question","name":"Do I need a website to start with your services?","acceptedAnswer":{"@type":"Answer","text":"Not necessarily. If you don’t have one yet, we can build a starter landing page as part of our packages to give your brand a digital home."}},
+    {"@type":"Question","name":"How does AI help my business if I’m a small startup?","acceptedAnswer":{"@type":"Answer","text":"AI saves you time and maximizes results—from generating on-brand captions to predicting the best posting times and automating lead capture. It makes your business more efficient, even with a small team."}},
+    {"@type":"Question","name":"What if I only need Social Media Management?","acceptedAnswer":{"@type":"Answer","text":"Our packages are designed to scale. You can start with social foundations (Tier 1) and later upgrade to include web funnels, automation, and AI tools as your business grows."}},
+    {"@type":"Question","name":"How long before I see results?","acceptedAnswer":{"@type":"Answer","text":"Most clients see improved engagement and visibility in the first 1–2 months, while lead conversions and ROI typically become clear within 3–6 months of consistent campaigns."}},
+    {"@type":"Question","name":"Who owns the content and tools you create for us?","acceptedAnswer":{"@type":"Answer","text":"All content, websites, and customized AI tools we create for you belong to your business. We manage and optimize them on your behalf."}},
+    {"@type":"Question","name":"What makes this different from hiring separate freelancers or agencies?","acceptedAnswer":{"@type":"Answer","text":"With us, you get an all-in-one growth system: creative storytelling, tech integration, and AI-powered automation—saving you time, cost, and the hassle of coordinating multiple providers."}}
+  ]
+}
+</script>
+
+{% endblock %}
