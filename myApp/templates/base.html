@@ -44,20 +44,36 @@
   </script>
 
   <style>
+    /* ---- HARD-LOCK HORIZONTAL OVERFLOW (iOS-safe) ---- */
+    html, body {
+      width: 100%;
+      max-width: 100%;
+      overflow-x: clip; /* better than hidden on iOS Safari */
+    }
+    :where(header, main, footer){ overflow-x: clip; }
+    * { box-sizing: border-box; }
+    img, svg, video, canvas { max-width: 100%; height: auto; display: block; }
+
+    /* Prevent 100vw + padding bugs on iOS */
+    @supports (width: 100dvw) {
+      .w-screen-fix { width: 100dvw; }
+    }
+
+    
 
     /* --- Nav hover effects --- */
-.nav-link{ position:relative; transition:color .2s ease }
-.nav-link::after{
-  content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
-  background:linear-gradient(90deg,#38bdf8,#6366f1,#a855f7);
-  transition:width .25s ease;
-  border-radius:2px;
-}
-.nav-link:hover{ color:rgba(11,15,26,.75) }
-.nav-link:hover::after{ width:100% }
+    .nav-link{ position:relative; transition:color .2s ease }
+    .nav-link::after{
+      content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
+      background:linear-gradient(90deg,#38bdf8,#6366f1,#a855f7);
+      transition:width .25s ease;
+      border-radius:2px;
+    }
+    .nav-link:hover{ color:rgba(11,15,26,.75) }
+    .nav-link:hover::after{ width:100% }
 
-/* Make header height available to JS + anchor offsets */
-:root{ --headerH: 64px; }
+    /* Make header height available to JS + anchor offsets */
+    :root{ --headerH: 64px; }
 
     :root{
     --navy:#0b1220;      /* deep navy background */
@@ -110,13 +126,14 @@
 
   <!-- Top Bar -->
   <header class="fixed inset-x-0 top-0 z-50 border-b border-black/5 dark:border-white/10
-               bg-white/80 dark:bg-[#0b0f1a]/70 backdrop-blur-lg">
-  <div class="max-w-7xl mx-auto px-3 sm:px-4">
-    <div class="h-16 sm:h-18 flex items-center justify-between">
-      <!-- Brand -->
-      <a href="/" class="font-semibold tracking-tight text-ink text-[17px] sm:text-[18px]">
-        Lioraè<span class="text-accent">.co</span>
-      </a>
+               bg-white/80 dark:bg-[#0b0f1a]/70 backdrop-blur-lg w-screen-fix">
+  <div class="w-screen-fix">
+    <div class="max-w-7xl mx-auto px-3 sm:px-4">
+      <div class="h-16 sm:h-18 flex items-center justify-between">
+        <!-- Brand -->
+        <a href="/" class="font-semibold tracking-tight text-ink text-[17px] sm:text-[18px]">
+          Lioraè<span class="text-accent">.co</span>
+        </a>
 
       <!-- Desktop nav -->
       <nav class="hidden md:flex items-center gap-7 text-[15px]">
@@ -338,9 +355,44 @@
   }
   .chatbox:not(.hidden){ opacity:1; transform:translateY(0) scale(1) }
   #chatbox.hidden{ display:none !important; }
-  @media (max-width: 640px){
-    .chatbox{ right:0; left:0; margin:0 auto; width:min(100vw,480px); height:82vh; bottom:0; border-radius:24px 24px 0 0; }
+  /* —— Compact floating chat on mobile —— */
+@media (max-width: 640px){
+  .chatbox{
+    /* fixed floating card, not full-screen */
+    right: calc(14px + env(safe-area-inset-right));
+    left: auto;
+    bottom: calc(90px + env(safe-area-inset-bottom));
+    width: min(92vw, 360px);
+    height: min(62vh, 520px);
+    margin: 0;
+    border-radius: 16px;
+    /* make sure it never triggers sideways scroll */
+    max-width: 100%;
+    overflow: hidden;
   }
+
+  /* smaller header + controls inside the compact panel */
+  .chatbox-header{ padding:10px 12px; border-top-left-radius:16px; border-top-right-radius:16px; }
+  .ari-badge{ width:28px; height:28px; font-size:13px }
+  .chatbox-title{ font-size:13px }
+
+  .chat-messages{ padding:10px 10px 6px 10px }
+  .avatar{ width:24px; height:24px; border-radius:8px; font-size:11px }
+  .bubble{ max-width:84%; font-size:13.5px; line-height:1.55 }
+
+  .chips{ margin-left:30px; gap:6px }
+  .chip{ padding:5px 10px; font-size:12px }
+
+  .chatbox-input{ padding:8px }
+  .icon-btn{ width:38px; height:38px; border-radius:10px }
+  .input{ min-height:40px; font-size:14px }
+  
+  /* nudger placement so it doesn't collide with the compact panel */
+  #chat-preview{
+    right: calc(86px + env(safe-area-inset-right));
+    bottom: calc(36px + env(safe-area-inset-bottom));
+  }
+}
 
   /* Header */
   .chatbox-header{
