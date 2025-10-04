@@ -44,6 +44,21 @@
   </script>
 
   <style>
+
+    /* --- Nav hover effects --- */
+.nav-link{ position:relative; transition:color .2s ease }
+.nav-link::after{
+  content:""; position:absolute; left:0; bottom:-6px; height:2px; width:0;
+  background:linear-gradient(90deg,#38bdf8,#6366f1,#a855f7);
+  transition:width .25s ease;
+  border-radius:2px;
+}
+.nav-link:hover{ color:rgba(11,15,26,.75) }
+.nav-link:hover::after{ width:100% }
+
+/* Make header height available to JS + anchor offsets */
+:root{ --headerH: 64px; }
+
     :root{
     --navy:#0b1220;      /* deep navy background */
     --ink:#0b0f1a;       /* black-ish text */
@@ -94,51 +109,67 @@
 <body class="bg-mist text-stone selection:bg-accent/10 selection:text-ink overflow-x-hidden">
 
   <!-- Top Bar -->
-  <header class="fixed inset-x-0 top-0 z-50">
-    <div class="mx-auto max-w-7xl px-4">
-      <!-- tighter spacing -->
-      <div class="glass shadow-soft rounded-2xl mt-2 px-4 md:px-6 py-3 flex items-center justify-between">
-        <a href="/" class="font-semibold tracking-tight text-ink">Lioraè<span class="text-accent">.co</span></a>
+  <header class="fixed inset-x-0 top-0 z-50 border-b border-black/5 dark:border-white/10
+               bg-white/80 dark:bg-[#0b0f1a]/70 backdrop-blur-lg">
+  <div class="max-w-7xl mx-auto px-3 sm:px-4">
+    <div class="h-16 sm:h-18 flex items-center justify-between">
+      <!-- Brand -->
+      <a href="/" class="font-semibold tracking-tight text-ink text-[17px] sm:text-[18px]">
+        Lioraè<span class="text-accent">.co</span>
+      </a>
 
-        <!-- DESKTOP NAV -->
-        <nav class="hidden md:flex gap-6 text-[15px]">
-        <a href="{% url 'home' %}" class="hover:text-ink/70 flow-link">Home</a>
-        <a href="{% url 'about' %}" class="hover:text-ink/70">About</a>
-        <a href="{% url 'home' %}#services" class="hover:text-ink/70 flow-link">Services</a>
-        <a href="{% url 'home' %}#process" class="hover:text-ink/70 flow-link">Process</a>
-        <a href="{% url 'home' %}#faq" class="hover:text-ink/70 flow-link">FAQ</a>
-        <a href="{% url 'home' %}#contact" class="hover:text-ink/70 flow-link">Contact</a>
+      <!-- Desktop nav -->
+      <nav class="hidden md:flex items-center gap-7 text-[15px]">
+        <a href="{% url 'home' %}" class="nav-link">Home</a>
+        <a href="{% url 'about' %}" class="nav-link">About</a>
+        <a href="{% url 'home' %}#services" class="nav-link flow-link">Services</a>
+        <a href="{% url 'home' %}#process"  class="nav-link flow-link">Process</a>
+        <a href="{% url 'home' %}#faq"      class="nav-link flow-link">FAQ</a>
+        <a href="{% url 'home' %}#contact"  class="nav-link flow-link">Contact</a>
       </nav>
 
+      <!-- CTA + Burger -->
+      <div class="flex items-center gap-3">
+        <a href="#contact"
+           class="hidden md:inline-flex items-center justify-center px-4 py-2 rounded-xl
+                  bg-ink text-white text-sm font-medium transition
+                  hover:-translate-y-0.5 hover:shadow-[0_10px_30px_rgba(2,8,23,.18)]
+                  active:translate-y-0">
+          Start a Project
+        </a>
 
-
-        <div class="flex items-center gap-3">
-          <a href="#contact" class="hidden md:inline-block px-4 py-2 rounded-xl bg-ink text-mist text-sm font-medium hover:shadow-ring">Start a Project</a>
-          <button id="navBtn" class="md:hidden p-2 rounded-lg hover:bg-cloud" aria-label="Open menu">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-width="1.6" d="M4 6h16M4 12h16M4 18h16"/>
-            </svg>
-          </button>
-        </div>
-      </div>
-
-      <!-- MOBILE NAV -->
-      <div id="mobileNav" class="hidden glass rounded-2xl mt-2 px-4 py-3 shadow-soft md:hidden">
-      <div class="grid gap-2 text-[15px]">
-        <a class="py-2 flow-link" href="{% url 'home' %}">Home</a>
-        <a class="py-2" href="{% url 'about' %}">About</a>  {# no flow-link here #}
-        <a class="py-2 flow-link" href="{% url 'home' %}#services">Services</a>
-        <a class="py-2 flow-link" href="{% url 'home' %}#process">Process</a>
-        <a class="py-2 flow-link" href="{% url 'home' %}#faq">FAQ</a>
-        <a class="py-2 flow-link" href="{% url 'home' %}#contact">Contact</a>
+        <button id="navBtn"
+                class="md:hidden h-11 w-11 grid place-items-center rounded-lg
+                       hover:bg-black/[.04] dark:hover:bg-white/10 transition"
+                aria-label="Open menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
+               viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-width="1.6" d="M4 6h16M4 12h16M4 18h16"/>
+          </svg>
+        </button>
       </div>
     </div>
 
+    <!-- Mobile nav (full-width dropdown) -->
+    <div id="mobileNav"
+         class="hidden md:hidden rounded-xl border border-black/5 dark:border-white/10
+                bg-white/90 dark:bg-[#0b0f1a]/80 backdrop-blur-lg mt-2 px-3 py-3 shadow-soft">
+      <div class="grid gap-2 text-[15px]">
+        <a class="py-2 nav-link" href="{% url 'home' %}">Home</a>
+        <a class="py-2 nav-link" href="{% url 'about' %}">About</a>
+        <a class="py-2 nav-link flow-link" href="{% url 'home' %}#services">Services</a>
+        <a class="py-2 nav-link flow-link" href="{% url 'home' %}#process">Process</a>
+        <a class="py-2 nav-link flow-link" href="{% url 'home' %}#faq">FAQ</a>
+        <a class="py-2 nav-link flow-link" href="{% url 'home' %}#contact">Contact</a>
+      </div>
+    </div>
+  </div>
+</header>
 
-  </header>
 
   <!-- hero starts closer -->
-  <main class="pt-16 md:pt-20">{% block content %}{% endblock %}</main>
+  <main style="padding-top: calc(var(--headerH) + 8px)">{% block content %}{% endblock %}</main>
+
 
   <footer class="border-t border-line mt-10">
     <div class="max-w-7xl mx-auto px-4 py-10 text-sm text-stone/70">
@@ -154,6 +185,20 @@
   </footer>
 
   <script>
+
+     (function(){
+    const header = document.querySelector('header');
+    const setH = () => document.documentElement.style.setProperty(
+      '--headerH', (header?.offsetHeight || 64) + 'px'
+    );
+    setH(); addEventListener('resize', setH);
+  })();
+
+  // Close mobile when going desktop
+  addEventListener('resize', () => {
+    if (matchMedia('(min-width: 768px)').matches)
+      document.getElementById('mobileNav')?.classList.add('hidden');
+  });
     // --- Mobile nav toggle
     document.getElementById('navBtn')?.addEventListener('click', ()=> {
       const m = document.getElementById('mobileNav');
