@@ -6,8 +6,16 @@
 
 <!-- ========================= PAGE STYLES (consolidated) ========================= -->
 <style>
-  /* layout safety */
-  html, body { max-width: 100%; overflow-x: hidden; }
+  /* ——— Hard-kill any horizontal overflow (safer than hidden on iOS) ——— */
+html, body { width:100%; overflow-x: clip; }
+
+/* Containers that might host absolute decorative layers */
+section, header, footer, .container, .mx-auto, .max-w-7xl, .max-w-6xl {
+  overflow-x: clip; /* prevents children from expanding page width */
+}
+
+/* Images/SVGs never exceed viewport width */
+img, svg, video { max-width: 100%; height: auto; }
 
   /* quick rhythm tweaks */
   #work-cosmos .py-8 { padding-top: 1.25rem; padding-bottom: 1.25rem; }
@@ -55,7 +63,7 @@
   @keyframes lm { from{ transform: translateX(0) } to{ transform: translateX(-50%) } }
   .logo-pill{
     padding:.4rem .8rem; border-radius:14px;
-    background: linear-gradient(90deg, rgba(14,165,233,.12), rgba(168,85,247,.12));
+    background: linear-gradient(90deg, rgb(255, 255, 255), rgb(255, 255, 255));
     border:1px solid rgba(2,8,23,.08); box-shadow: 0 8px 18px rgba(2,8,23,.10);
   }
   .dark .logo-pill{
@@ -159,7 +167,7 @@
 </style>
 
 <!-- ========================= HERO ========================= -->
-<section id="hero" class="relative isolate overflow-hidden">
+<section id="hero" class="relative isolate overflow-hidden pt-16 md:pt-20 pb-20">
   <!-- COLOR BACKDROP -->
   <div class="absolute inset-0 -z-20">
     <div class="absolute inset-0 bg-gradient-to-b from-white via-white/90 to-white/70
@@ -526,7 +534,8 @@
 </section>
 
 <!-- ========================= TESTIMONIALS ========================= -->
-<section id="testimonials" tabindex="-1" class="mt-20 scroll-mt-28">
+<section id="testimonials" ... class="mt-20 scroll-mt-28 overflow-x-clip">
+
   <style>
     /* ===== marquee core ===== */
     .tm-viewport{ position:relative; overflow:hidden; }
@@ -775,7 +784,7 @@
 
 
 <!-- ========================= SERVICE TIERS ========================= -->
-<section id="services" tabindex="-1" class="relative mt-24 scroll-mt-20">
+<section id="services" tabindex="-1" class="relative mt-24 scroll-mt-20 overflow-x-clip">
   <div aria-hidden="true" class="pointer-events-none absolute inset-0 -z-10">
     <div class="absolute inset-0" style="background:#0b1220"></div>
     <div class="absolute inset-0"
@@ -903,13 +912,15 @@
 </section>
 
 <!-- ========================= FAQ ========================= -->
-<section id="faq" tabindex="-1" class="mt-24 scroll-mt-28">
+<section id="faq" tabindex="-1" class="mt-24 scroll-mt-28 overflow-x-clip">
   <div class="max-w-7xl mx-auto px-4">
     <div class="grid md:grid-cols-2 gap-10 lg:gap-14 items-start">
       <div class="pointer-events-none absolute inset-0 -z-10">
         <div class="absolute inset-0 bg-white/70 dark:bg-white/[.04] backdrop-blur-[2px]"></div>
-        <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[900px] bg-[radial-gradient(500px_220px_at_50%_0%,rgba(14,165,233,.14),transparent_70%)]"></div>
-        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[380px] w-[900px] bg-[radial-gradient(520px_220px_at_50%_100%,rgba(168,85,247,.12),transparent_70%)]"></div>
+        <div class="absolute -top-24 left-1/2 -translate-x-1/2 h-[420px] w-[min(100vw,900px)]
+ bg-[radial-gradient(500px_220px_at_50%_0%,rgba(14,165,233,.14),transparent_70%)]"></div>
+        <div class="absolute bottom-0 left-1/2 -translate-x-1/2 h-[380px] w-[min(100vw,900px)]
+ bg-[radial-gradient(520px_220px_at_50%_100%,rgba(168,85,247,.12),transparent_70%)]"></div>
       </div>
 
       <aside class="order-2 md:order-1">
@@ -1000,7 +1011,7 @@
 </section>
 
 <!-- ========================= CONTACT ========================= -->
-<section id="contact" tabindex="-1" class="relative mt-20 scroll-mt-28">
+<section id="contact" tabindex="-1" class="relative mt-20 scroll-mt-28 overflow-x-clip">
   <div class="max-w-7xl mx-auto px-4">
     <div class="grid gap-6 md:grid-cols-3">
       <!-- FORM -->
